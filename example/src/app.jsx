@@ -14,6 +14,8 @@ import CyNetworkViewerComponent from 'cy-network-viewer-component'
 const networkData = require('./sample.json')
 
 
+// Styles
+
 const style = {
   width: '100%',
   height: '100%',
@@ -37,7 +39,10 @@ const titleStyle = {
 }
 
 function selectNodes(networkId, nodeIds) {
-  console.log('Custom select function called!!')
+  console.log('Custom select function called!')
+
+  console.log('Network ID: ' + networkId)
+  console.log('Selected Nodes: ' + nodeIds)
 }
 
 const myCustomEventHandlers = {
@@ -47,12 +52,6 @@ const myCustomEventHandlers = {
 class App extends Component {
 
   render() {
-
-
-    console.log('handler-------')
-    console.log(myCustomEventHandlers)
-
-
     return (
       <div style={appStyle}>
         <h2 style={titleStyle}>Rendering sample with React only</h2>
