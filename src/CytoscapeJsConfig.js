@@ -5,10 +5,13 @@ const DEF_LAYOUT = 'preset'
 const DEF_BG_COLOR = '#FFFFFF'
 
 const CY_EVENTS = {
-  select: "select",
+  select: 'select',
   unselect: 'unselect',
   add: 'add',
-  remove: 'remove'
+  remove: 'remove',
+
+  boxselect: 'boxselect',
+  boxstart: 'boxstart'
 }
 
 const DEF_VS = [
@@ -52,6 +55,6 @@ const DEF_VS = [
 ]
 
 // Events handled by this renderer
-const SUPPORTED_EVENTS = 'data select unselect add remove'
+const SUPPORTED_EVENTS = 'data select unselect add remove boxselect boxstart'
 
 export { SUPPORTED_EVENTS, CY_EVENTS, DEF_BG_COLOR, DEF_LAYOUT, DEF_VS}

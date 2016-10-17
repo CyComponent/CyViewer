@@ -9,9 +9,10 @@
     "clean": "rm build/app.js"
   },
   "dependencies": {
+    "cy-network-viewer-component": "^2.0.0",
+    "immutable": "^3.8.1",
     "react": "^15.3.2",
-    "react-dom": "^15.3.2",
-    "cy-network-viewer-component": "^2.0.0"
+    "react-dom": "^15.3.2"
   },
   "devDependencies": {
     "babel-core": "^6.3.21",

@@ -26,9 +26,16 @@ function selectNodes(networkId, nodeIds) {
   console.log('Selected Node ID: ' + nodeIds)
 }
 
+function selectEdges(networkId, edgeIds) {
+  console.log('====== Custom edge select function called! ========');
+  console.log('Network ID: ' + networkId)
+  console.log('Selected Edge ID: ' + edgeIds)
+}
+
 // Then use it as a custom handler
 const custom = {
-  selectNodes: selectNodes
+  selectNodes: selectNodes,
+  selectEdges: selectEdges
 };
 
 

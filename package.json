@@ -34,7 +34,8 @@
     "url": "https://github.com/CyComponent/CyNetworkViewerComponent/issues"
   },
   "dependencies": {
-    "cytoscape": "^2.7.10"
+    "cytoscape": "^2.7.10",
+    "immutable": "^3.8.1"
   },
   "peerDependencies": {
     "react": "^15.3.0",
