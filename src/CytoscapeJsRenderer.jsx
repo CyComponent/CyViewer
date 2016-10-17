@@ -183,13 +183,9 @@ class CytoscapeJsRenderer extends Component {
   }
 
 
-
   render() {
     const id = this.props.networkId
     const style = this.props.style
-
-    console.log("CYJS event handlers in REDN")
-    console.log(this.props.eventHandlers)
 
     return (
       <div

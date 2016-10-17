@@ -7,70 +7,72 @@
 
 import React, {Component} from 'react'
 import ReactDOM from 'react-dom'
-
 import CyNetworkViewerComponent from 'cy-network-viewer-component'
 
-// Sample data in Cytoscape.js format
-const networkData = require('./sample.json')
+// Sample network data in Cytoscape.js JSON format
+const networkData = require('./sample.json');
+
+// HTML section to be used for rendering component
+const TAG = 'viewer';
+
+
+
+/**
+ * Custom action to handle node selection event in the renderer
+ */
+function selectNodes(networkId, nodeIds) {
+  console.log('====== Custom node select function called! ========');
+  console.log('Network ID: ' + networkId)
+  console.log('Selected Node ID: ' + nodeIds)
+}
+
+// Then use it as a custom handler
+const custom = {
+  selectNodes: selectNodes
+};
+
+
+// Application implemented as a stateless functional component
+const App = props =>
+  <section style={props.appStyle}>
+    <h2 style={props.titleStyle}>Rendering sample with React only</h2>
+    <CyNetworkViewerComponent
+      {...props}
+      networkId='renderer1'
+      renderer='cytoscape'
+    />
+  </section>
 
 
 // Styles
-
-const style = {
-  width: '100%',
-  height: '100%',
-  backgroundColor: '#404040'
-}
-
 const appStyle = {
   backgroundColor: '#404040',
   color: '#EEEEEE',
   width: '100%',
   height: '100%',
+};
 
-}
+const style = {
+  width: '100%',
+  height: '100%',
+  backgroundColor: '#404040'
+};
 
 const titleStyle = {
   fontWeight: 100,
   fontFamily: 'HelvaticaNeu',
-  color: '#AAAAAA',
-  paddingLeft: '1em',
-  paddingTop: '0.5em'
-}
-
-function selectNodes(networkId, nodeIds) {
-  console.log('Custom select function called!')
-
-  console.log('Network ID: ' + networkId)
-  console.log('Selected Nodes: ' + nodeIds)
-}
-
-const myCustomEventHandlers = {
-  selectNodes: selectNodes
-}
-
-class App extends Component {
-
-  render() {
-    return (
-      <div style={appStyle}>
-        <h2 style={titleStyle}>Rendering sample with React only</h2>
-        <CyNetworkViewerComponent
-          networkId='renderer1'
-          renderer='cytoscape'
-          network={networkData}
-          style={style}
-
-          eventHandlers={myCustomEventHandlers}
-        />
-      </div>
-    )
-  }
-
-}
-
+  color: '#BBBBBB',
+  paddingLeft: '0.8em',
+  paddingTop: '0.4em'
+};
 
 ReactDOM.render(
-  <App />,
-  document.getElementById('viewer')
+  <App
+    network={networkData}
+    style={style}
+    eventHandlers={custom}
+    appStyle={appStyle}
+    titleStyle={titleStyle}
+  />,
+  document.getElementById(TAG)
 );
