@@ -3,6 +3,7 @@ import Immutable, {Map} from 'immutable'
 
 import CytoscapeJsRenderer from './CytoscapeJsRenderer'
 
+const CX_SERVICE_URL = 'http://ci-dev-serv.ucsd.edu:3001/cx2cyjs'
 
 // Default rendering engine name, Cytoscape.js
 const REDERER_CY = 'cytoscape';
@@ -15,6 +16,14 @@ const STYLE = {
   width: '100%',
   height: '100%'
 };
+
+const EMPTY_NET = {
+  data: {},
+  elements: {
+    nodes: [],
+    edges: []
+  }
+}
 
 
 /**
@@ -33,15 +42,25 @@ const STYLE = {
 const DEF_EVENT_HANDLERS = Immutable.fromJS({
 
   // Selection of nodes/edges
-  selectNodes: (networkId, nodeIds) => {console.log('selectNodes called.')},
-  selectEdges: (networkId, edgeIds) => {console.log('selectEdges called.')},
+  selectNodes: (networkId, nodeIds) => {
+    console.log('selectNodes called.')
+  },
+  selectEdges: (networkId, edgeIds) => {
+    console.log('selectEdges called.')
+  },
 
   // Nodes/edges unselected
-  deselectNodes: (networkId, nodeIds) => {console.log('deselectNodes called.')},
-  deselectEdges: (networkId, edgeIds) => {console.log('deselectEdges called.')},
+  deselectNodes: (networkId, nodeIds) => {
+    console.log('deselectNodes called.')
+  },
+  deselectEdges: (networkId, edgeIds) => {
+    console.log('deselectEdges called.')
+  },
 
   // Node positions changed (usually done by mouse drag)
-  changeNodePositions: (networkId, nodePositions) => {console.log('changeNodePositions called.')},
+  changeNodePositions: (networkId, nodePositions) => {
+    console.log('changeNodePositions called.')
+  },
 
 
   // Are there any other important events generated in the renderer...?
@@ -56,15 +75,71 @@ const DEF_EVENT_HANDLERS = Immutable.fromJS({
  */
 class CyNetworkViewerComponent extends Component {
 
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      cyjsNetwork: null
+    }
+  }
+
+  // TODO: make this a parameter
+  cx2js = immutableNetwork => {
+    console.log('========== API call')
+
+    console.log(immutableNetwork)
+
+    const params = {
+      method: 'post',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(immutableNetwork.get('network'))
+    }
+
+    console.log(params)
+
+    fetch(CX_SERVICE_URL, params)
+
+      .then(response => {
+        return response.json()
+      })
+      .then(json => {
+        console.log('got restlt in CYJS')
+        console.log(json)
+        this.setState({cyjsNetwork: json})
+      })
+      .catch(error => {
+        throw error;
+      })
+  }
+
+
+  componentWillMount() {
+    this.cx2js(this.props.network);
+  }
+
+
   render() {
     const eventHandlers = this.buildEventHanders();
     const props = this.props
     const id = props.networkId;
 
+    let network = this.state.cyjsNetwork
+    if(network === null) {
+      network = EMPTY_NET
+    }
+
+
+    console.log('----- final network-----')
+    console.log(network)
+
     if (this.props.renderer === REDERER_CY) {
       return (
         <CytoscapeJsRenderer
           {...props}
+          network={network}
           key={id}
           eventHandlers={eventHandlers}
 
@@ -79,7 +154,7 @@ class CyNetworkViewerComponent extends Component {
 
   buildEventHanders() {
     const handlers = this.props.eventHandlers;
-    if(handlers === undefined || handlers === null) {
+    if (handlers === undefined || handlers === null) {
       return DEF_EVENT_HANDLERS.toJS()
     }
 
