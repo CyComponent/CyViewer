@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <title>Simple Viewer Demo</title>
+    <meta charset="utf-8">
+
+    <script src="SimpleNetworkViewer.js"></script>
+</head>
+
+<body>
+
+<header>
+    <h3>Simple Network Viewer Demo</h3>
+    <h4> - For people who don't want to learn details...</h4>
+</header>
+
+<div id="viewer1"></div>
+<div id="viewer2"></div>
+
+<script>
+    const ndexNetwork1 = 'http://dev2.ndexbio.org/rest/network/e6075843-8a70-11e6-93d8-0660b7976219/asCX'
+    const ndexNetwork2 = 'http://dev2.ndexbio.org/rest/network/1cbc2bf4-76b9-11e6-93d8-0660b7976219/asCX'
+
+
+    // 1. Get CX data from somewhere on this planet
+    fetch(ndexNetwork1)
+            .then(response => (response.json()))
+            .then(cxData => {
+                const viewer1 = SimpleNetworkViewer.create('viewer1', 'networkId1', cxData);
+                viewer1.display();
+            });
+
+    fetch(ndexNetwork2)
+            .then(response => (response.json()))
+            .then(cxData => {
+                const viewer2 = SimpleNetworkViewer
+                        .create('viewer2', 'networkId2', cxData, '100%', '700px'
+                                ,'radial-gradient(#ffffff 1%, #77777F 99%)');
+                viewer2.display();
+            });
+</script>
+
+</body>
+</html>
