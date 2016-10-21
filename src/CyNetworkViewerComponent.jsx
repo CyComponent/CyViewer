@@ -120,6 +120,10 @@ class CyNetworkViewerComponent extends Component {
     this.cx2js(this.props.network);
   }
 
+  componentWillReceiveProps(nextProps) {
+    this.cx2js(nextProps.network);
+  }
+
 
   render() {
     const eventHandlers = this.buildEventHanders();

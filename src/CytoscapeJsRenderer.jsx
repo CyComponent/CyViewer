@@ -35,6 +35,8 @@ class CytoscapeJsRenderer extends Component {
     }
 
     const cy = this.state.cyjs
+    cy.remove(cy.elements('node'))
+    cy.remove(cy.elements('edge'))
     cy.add(network.elements.nodes)
     cy.add(network.elements.edges)
     cy.fit()
