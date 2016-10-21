@@ -52,7 +52,7 @@ class CytoscapeJsRenderer extends Component {
     const cy = cytoscape(
       Object.assign(
         {
-          container: document.getElementById(this.props.networkId),
+          container: this.cyjs,
           elements: [],
           style: visualStyle,
           layout: {
@@ -184,16 +184,9 @@ class CytoscapeJsRenderer extends Component {
     })
   }
 
-
   render() {
-    const id = this.props.networkId
-    const style = this.props.style
-
     return (
-      <div
-        id={id}
-        style={style}
-      />
+      <div ref={(cyjs) => this.cyjs = cyjs} style={this.props.style} />
     )
   }
 }
