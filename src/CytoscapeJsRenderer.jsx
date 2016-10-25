@@ -12,6 +12,7 @@ class CytoscapeJsRenderer extends Component {
     this.state = {
       rendered: false,
       vs: 'default',
+      running: Set()
     }
   }
 
@@ -88,21 +89,8 @@ class CytoscapeJsRenderer extends Component {
   // }
 
   componentWillReceiveProps(nextProps) {
-    // const command = nextProps.commands.command
-    // if(command !== '') {
-    //   const cy = this.state.cyjs
-    //   if(command === 'fit') {
-    //     cy.fit()
-    //   }
-    //   else if(command === 'zoomIn') {
-    //     cy.zoom(cy.zoom() * 1.2)
-    //   }
-    //   else if(command === 'zoomOut') {
-    //     cy.zoom(cy.zoom() * 0.8)
-    //   }
-    //   this.props.commandActions.reset()
-    //   return
-    // }
+    const command = nextProps.runningCommand
+    this.runCommand(command);
     //
     // // Style
     // const curVs = this.state.vs
@@ -127,10 +115,32 @@ class CytoscapeJsRenderer extends Component {
       && this.state.rendered === true) {
       return
     }
-
-    console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
-    console.log(this.state.rendered)
     this.updateCyjs(nextProps.network)
+  }
+
+  runCommand = command => {
+    // Execute Cytoscape command
+    if(command === null) {
+      return
+    }
+
+    if(command !== '') {
+      console.log("===Executing command: " + command);
+      this.state.running.add(command)
+
+      const cy = this.state.cyjs
+
+      if(command === 'fit') {
+        cy.fit()
+      } else if(command === 'zoomIn') {
+        cy.zoom(cy.zoom() * 1.2)
+      } else if(command === 'zoomOut') {
+        cy.zoom(cy.zoom() * 0.8)
+      }
+
+      this.state.running.delete(command)
+
+    }
   }
 
 
@@ -156,25 +166,25 @@ class CytoscapeJsRenderer extends Component {
           if(this.state.boxSelection) {
             const nodes = cy.$('node:selected').map(node=>node.data().id);
             const edges = cy.$('edge:selected').map(edge=>edge.data().id);
-            this.props.eventHandlers.selectNodes(this.props.networkId, nodes)
-            this.props.eventHandlers.selectEdges(this.props.networkId, edges)
+            this.props.eventHandlers.selectNodes(nodes)
+            this.props.eventHandlers.selectEdges(edges)
             this.setState({ boxSelection: false });
           }
           break;
         case config.CY_EVENTS.select:
           if(!this.state.boxSelection) {
             if (target.isNode()) {
-              this.props.eventHandlers.selectNodes(this.props.networkId, [target.data().id])
+              this.props.eventHandlers.selectNodes([target.data().id])
             } else {
-              this.props.eventHandlers.selectEdges(this.props.networkId, [target.data().id])
+              this.props.eventHandlers.selectEdges([target.data().id])
             }
           }
           break;
         case config.CY_EVENTS.unselect:
           if(target.isNode()) {
-            this.props.eventHandlers.deselectNodes(this.props.networkId, [target.data().id])
+            this.props.eventHandlers.deselectNodes([target.data().id])
           } else {
-            this.props.eventHandlers.deselectEdges(this.props.networkId, [target.data().id])
+            this.props.eventHandlers.deselectEdges([target.data().id])
           }
           break;
 

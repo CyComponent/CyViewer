@@ -1,5 +1,6 @@
 import React, {Component, PropTypes} from 'react'
-import Immutable, {Map} from 'immutable'
+import Immutable from 'immutable'
+import shortid from 'shortid'
 
 import CytoscapeJsRenderer from './CytoscapeJsRenderer'
 
@@ -42,23 +43,23 @@ const EMPTY_NET = {
 const DEF_EVENT_HANDLERS = Immutable.fromJS({
 
   // Selection of nodes/edges
-  selectNodes: (networkId, nodeIds) => {
+  selectNodes: (nodeIds) => {
     console.log('selectNodes called.')
   },
-  selectEdges: (networkId, edgeIds) => {
+  selectEdges: (edgeIds) => {
     console.log('selectEdges called.')
   },
 
   // Nodes/edges unselected
-  deselectNodes: (networkId, nodeIds) => {
+  deselectNodes: (nodeIds) => {
     console.log('deselectNodes called.')
   },
-  deselectEdges: (networkId, edgeIds) => {
+  deselectEdges: (edgeIds) => {
     console.log('deselectEdges called.')
   },
 
   // Node positions changed (usually done by mouse drag)
-  changeNodePositions: (networkId, nodePositions) => {
+  changeNodePositions: (nodePositions) => {
     console.log('changeNodePositions called.')
   },
 
@@ -79,15 +80,16 @@ class CyNetworkViewerComponent extends Component {
     super(props);
 
     this.state = {
-      cyjsNetwork: null
+      cyjsNetwork: null,
+      networkId: shortid.generate(),
+      needUpdate: true // Network is rendered or not
     }
   }
 
   // TODO: make this a parameter
-  cx2js = immutableNetwork => {
-    console.log('========== API call')
-
-    console.log(immutableNetwork)
+  cx2js = cxNetwork => {
+    console.log('========== API call for cx to CYJS')
+    console.log(cxNetwork)
 
     const params = {
       method: 'post',
@@ -95,10 +97,8 @@ class CyNetworkViewerComponent extends Component {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify(immutableNetwork.get('network'))
+      body: JSON.stringify(cxNetwork)
     }
-
-    console.log(params)
 
     fetch(CX_SERVICE_URL, params)
 
@@ -108,7 +108,11 @@ class CyNetworkViewerComponent extends Component {
       .then(json => {
         console.log('got restlt in CYJS')
         console.log(json)
-        this.setState({cyjsNetwork: json})
+        this.setState({
+          cyjsNetwork: json,
+          networkId: shortid.generate(),
+          needUpdate: true
+        })
       })
       .catch(error => {
         throw error;
@@ -117,24 +121,25 @@ class CyNetworkViewerComponent extends Component {
 
 
   componentWillMount() {
-    this.cx2js(this.props.network);
+    this.cx2js(this.props.cxNetwork);
   }
 
   componentWillReceiveProps(nextProps) {
-    this.cx2js(nextProps.network);
+    if(this.props.cxNetwork !== nextProps.cxNetwork) {
+      console.log('NEED update')
+      this.cx2js(nextProps.cxNetwork);
+    }
   }
 
 
   render() {
     const eventHandlers = this.buildEventHanders();
     const props = this.props
-    const id = props.networkId;
 
     let network = this.state.cyjsNetwork
     if(network === null) {
       network = EMPTY_NET
     }
-
 
     console.log('----- final network-----')
     console.log(network)
@@ -144,9 +149,8 @@ class CyNetworkViewerComponent extends Component {
         <CytoscapeJsRenderer
           {...props}
           network={network}
-          key={id}
+          networkId={this.state.networkId}
           eventHandlers={eventHandlers}
-
         />
       )
     } else {
@@ -169,14 +173,11 @@ class CyNetworkViewerComponent extends Component {
 
 CyNetworkViewerComponent.propTypes = {
 
-  // Immutable ID to be used as the unique identifier in the DOM
-  networkId: PropTypes.string.isRequired,
-
   // Event handlers for actions for the network, such as selection.
   eventHandlers: PropTypes.object.isRequired,
 
-  // Network data in THE RENDERER'S DATA FORMAT. MAY NOT CX!
-  network: PropTypes.object,
+  // Network data in CX
+  cxNetwork: PropTypes.array,
 
   // Style of the area used by the renderer
   style: PropTypes.object,
@@ -188,13 +189,18 @@ CyNetworkViewerComponent.propTypes = {
   renderer: PropTypes.string,
 
   // Optional parameters for the renderer
-  rendererProps: PropTypes.object
+  rendererProps: PropTypes.object,
+
+  // Renderer's command running now.
+  // This is null except when something is actually running in renderer
+  runningCommand: PropTypes.string
 };
 
 /**
  * Default values
  */
 CyNetworkViewerComponent.defaultProps = {
+  runningCommand: null,
   renderer: REDERER_CY,
   style: STYLE,
   eventHandlers: DEF_EVENT_HANDLERS.toJS()
