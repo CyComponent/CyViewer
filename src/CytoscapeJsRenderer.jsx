@@ -12,7 +12,7 @@ class CytoscapeJsRenderer extends Component {
     this.state = {
       rendered: false,
       vs: 'default',
-      running: Set()
+      currentLayout: null
     }
   }
 
@@ -41,13 +41,21 @@ class CytoscapeJsRenderer extends Component {
     cy.add(network.elements.nodes)
     cy.add(network.elements.edges)
     cy.fit()
+    console.log("=========== CytoscapeJS rendered network ==========");
   }
 
   componentDidMount() {
     // Create Cytoscape.js instance here, only once!
     let visualStyle = this.props.networkStyle
-    if(visualStyle === undefined) {
+
+    console.log("Initial style: ------------")
+    console.log(visualStyle)
+
+
+    if(visualStyle === undefined || visualStyle === null) {
       visualStyle = config.DEF_VS
+    } else {
+      visualStyle = visualStyle.style
     }
 
     const cy = cytoscape(
@@ -68,42 +76,28 @@ class CytoscapeJsRenderer extends Component {
 
 
   // shouldComponentUpdate(nextProps, nextState) {
-  //   // React is responsible only for the root Cytoscape tag.
-  //   // and in this section, the only thing we need to check is background and network.
-  //   console.log("$$$$$$$$$ Checking props")
-  //   if(!this.state.rendered) {
-  //     console.log("$$$$$$$$$ NEED rendering")
-  //     this.updateCyjs(this.props.network)
-  //     return true
-  //   }
-  //
-  //   if (nextProps.network === this.props.network) {
-  //     // Is this background update?
-  //     if(nextProps.backgroundColor === this.props.backgroundColor) {
-  //       return false
-  //     } else {
-  //       return true
-  //     }
-  //   }
-  //   return true
+  //   console.log("###### Checking props ########")
+  //   return nextProps.network !== this.props.network;
   // }
 
   componentWillReceiveProps(nextProps) {
-    const command = nextProps.runningCommand
+    console.log("=========== WILL PROPS");
+    const command = nextProps.command
     this.runCommand(command);
-    //
-    // // Style
-    // const curVs = this.state.vs
-    // const nextVs = nextProps.currentVs.get('vsName')
-    // if(curVs !== nextVs) {
-    //   const vs = this.props.styles.get(nextVs)
-    //   this.state.cyjs.style(vs)
-    //   this.setState({
-    //     vs: nextVs
-    //   })
-    //
-    //   return;
-    // }
+    this.applyLayout(nextProps.rendererOptions.layout)
+
+    console.log(nextProps);
+    // Style
+    let visualStyle = nextProps.networkStyle
+    console.log("NEXT style: ------------")
+    console.log(visualStyle)
+
+    if(visualStyle === undefined || visualStyle === null) {
+      visualStyle = config.DEF_VS
+    } else {
+      visualStyle = visualStyle.style
+    }
+    this.state.cyjs.style(visualStyle)
 
 
     if (nextProps === undefined || nextProps.network === undefined) {
@@ -120,26 +114,29 @@ class CytoscapeJsRenderer extends Component {
 
   runCommand = command => {
     // Execute Cytoscape command
-    if(command === null) {
+    if (command === null) {
+      console.log('===No command===');
       return
     }
 
-    if(command !== '') {
-      console.log("===Executing command: " + command);
-      this.state.running.add(command)
+    console.log("===Executing command: " + command);
+    const cy = this.state.cyjs
 
-      const cy = this.state.cyjs
+    if (command === 'fit') {
+      cy.fit()
+    } else if (command === 'zoomIn') {
+      cy.zoom(cy.zoom() * 1.2)
+    } else if (command === 'zoomOut') {
+      cy.zoom(cy.zoom() * 0.8)
+    }
+  }
 
-      if(command === 'fit') {
-        cy.fit()
-      } else if(command === 'zoomIn') {
-        cy.zoom(cy.zoom() * 1.2)
-      } else if(command === 'zoomOut') {
-        cy.zoom(cy.zoom() * 0.8)
-      }
-
-      this.state.running.delete(command)
-
+  applyLayout = layout => {
+    if(layout !== undefined && this.state.currentLayout !== layout) {
+      this.state.cyjs.layout({
+        name: layout
+      })
+      this.setState({currentLayout: layout})
     }
   }
 
@@ -157,6 +154,9 @@ class CytoscapeJsRenderer extends Component {
         return
       }
 
+      const nodeProps = {}
+      const edgeProps = {}
+
       switch (eventType) {
         case config.CY_EVENTS.boxstart:
           this.setState({boxSelection: true})
@@ -164,9 +164,15 @@ class CytoscapeJsRenderer extends Component {
 
         case config.CY_EVENTS.boxselect:
           if(this.state.boxSelection) {
-            const nodes = cy.$('node:selected').map(node=>node.data().id);
+            const nodes = cy.$('node:selected').map(node=> {
+
+              const nodeData = node.data()
+              nodeProps[nodeData.id] = nodeData
+
+              return nodeData.id});
             const edges = cy.$('edge:selected').map(edge=>edge.data().id);
-            this.props.eventHandlers.selectNodes(nodes)
+
+            this.props.eventHandlers.selectNodes(nodes, nodeProps)
             this.props.eventHandlers.selectEdges(edges)
             this.setState({ boxSelection: false });
           }
@@ -174,9 +180,15 @@ class CytoscapeJsRenderer extends Component {
         case config.CY_EVENTS.select:
           if(!this.state.boxSelection) {
             if (target.isNode()) {
-              this.props.eventHandlers.selectNodes([target.data().id])
+              const nodeData = target.data()
+              const nodeId = nodeData.id
+              nodeProps[nodeId] = nodeData
+              this.props.eventHandlers.selectNodes([nodeId], nodeProps)
             } else {
-              this.props.eventHandlers.selectEdges([target.data().id])
+              const edgeData = target.data()
+              const edgeId = edgeData.id
+              edgeProps[edgeId] = edgeData
+              this.props.eventHandlers.selectEdges([edgeId], edgeProps)
             }
           }
           break;
@@ -194,7 +206,12 @@ class CytoscapeJsRenderer extends Component {
     })
   }
 
+
   render() {
+
+    console.log('----- Render called in leaf component-----')
+    console.log(this.props.network)
+
     return (
       <div ref={(cyjs) => this.cyjs = cyjs} style={this.props.style} />
     )

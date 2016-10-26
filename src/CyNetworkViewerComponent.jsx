@@ -5,6 +5,7 @@ import shortid from 'shortid'
 import CytoscapeJsRenderer from './CytoscapeJsRenderer'
 
 const CX_SERVICE_URL = 'http://ci-dev-serv.ucsd.edu:3001/cx2cyjs'
+// const CX_SERVICE_URL = 'http://localhost:3000/cx2cyjs'
 
 // Default rendering engine name, Cytoscape.js
 const REDERER_CY = 'cytoscape';
@@ -43,10 +44,10 @@ const EMPTY_NET = {
 const DEF_EVENT_HANDLERS = Immutable.fromJS({
 
   // Selection of nodes/edges
-  selectNodes: (nodeIds) => {
+  selectNodes: (nodeIds, properties = {}) => {
     console.log('selectNodes called.')
   },
-  selectEdges: (edgeIds) => {
+  selectEdges: (edgeIds, properties = {}) => {
     console.log('selectEdges called.')
   },
 
@@ -82,7 +83,6 @@ class CyNetworkViewerComponent extends Component {
     this.state = {
       cyjsNetwork: null,
       networkId: shortid.generate(),
-      needUpdate: true // Network is rendered or not
     }
   }
 
@@ -110,8 +110,7 @@ class CyNetworkViewerComponent extends Component {
         console.log(json)
         this.setState({
           cyjsNetwork: json,
-          networkId: shortid.generate(),
-          needUpdate: true
+          networkId: shortid.generate()
         })
       })
       .catch(error => {
@@ -137,12 +136,25 @@ class CyNetworkViewerComponent extends Component {
     const props = this.props
 
     let network = this.state.cyjsNetwork
+
+    console.log('!!!ORIGINAL ***************')
+    console.log(this.props.eventHandlers)
+    console.log(eventHandlers);
+
     if(network === null) {
       network = EMPTY_NET
     }
 
-    console.log('----- final network-----')
-    console.log(network)
+    let vs = {
+      style: network.style
+    }
+
+    if(this.props.networkStyle !== undefined) {
+      vs = this.props.networkStyle
+    }
+
+    console.log(vs)
+
 
     if (this.props.renderer === REDERER_CY) {
       return (
@@ -151,6 +163,7 @@ class CyNetworkViewerComponent extends Component {
           network={network}
           networkId={this.state.networkId}
           eventHandlers={eventHandlers}
+          networkStyle={vs}
         />
       )
     } else {
@@ -189,21 +202,22 @@ CyNetworkViewerComponent.propTypes = {
   renderer: PropTypes.string,
 
   // Optional parameters for the renderer
-  rendererProps: PropTypes.object,
+  rendererOptions: PropTypes.object,
 
-  // Renderer's command running now.
+  // Command for renderer to be executed next.
   // This is null except when something is actually running in renderer
-  runningCommand: PropTypes.string
+  command: PropTypes.string
 };
 
 /**
  * Default values
  */
 CyNetworkViewerComponent.defaultProps = {
-  runningCommand: null,
+  command: null,
   renderer: REDERER_CY,
   style: STYLE,
-  eventHandlers: DEF_EVENT_HANDLERS.toJS()
+  eventHandlers: DEF_EVENT_HANDLERS.toJS(),
+  rendererOptions: {}
 };
 
 export default CyNetworkViewerComponent

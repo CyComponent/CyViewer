@@ -18,41 +18,37 @@ const DEF_VS = [
   {
     selector: 'node',
     style: {
-      'background-color': 'white',
-      'background-opacity': '0',
-      'width': '0.8em',
-      'height': '0.8em',
-      'border-width': '4px',
-      'border-color': '#4580CC',
+      'background-color': 'teal',
+      width: '1em',
+      height: '1em',
+      label: 'data(name)'
     }
   },
   {
     selector: 'node:selected',
     style: {
-      'border-width': '0',
-      'background-opacity': '1',
       'background-color': 'orange',
-      'width': '1em',
-      'height': '1em',
     }
   },
   {
     selector: 'edge',
     style: {
-      'line-color': 'white',
+      'line-color': '#999999',
       'width': '1px',
-      'opacity': '0.5'
+      label: 'data(interaction)',
+      'font-size': '0.1em',
+      'text-rotation': 'autorotate',
+      'text-wrap': 'wrap',
     }
   },
   {
     selector: 'edge:selected',
     style: {
-      'line-color': 'white',
-      'width': '1px',
-      'opacity': '0.5'
+      'line-color': 'red',
     }
   }
-]
+];
+
 
 // Events handled by this renderer
 const SUPPORTED_EVENTS = 'data select unselect add remove boxselect boxstart'
