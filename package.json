@@ -1,8 +1,8 @@
 {
-  "name": "cy-network-viewer-component",
+  "name": "cy-viewer",
   "author": "Keiichiro Ono <kono@ucsd.edu>",
   "version": "v2.0.0",
-  "description": "Pure React Component for graph data visualization",
+  "description": "React Component for graph data visualization",
   "license": "MIT",
   "keywords": [
     "cytoscape",
@@ -10,7 +10,7 @@
     "graph",
     "bioinformatics"
   ],
-  "main": "build/CyNetworkViewerComponent.js",
+  "main": "build/CyViewer.js",
   "files": [
     "webpack.config.js",
     ".preprocessor.js",
@@ -25,13 +25,13 @@
     "test": "eslint src/ && jest",
     "coverage": "jest --coverage"
   },
-  "homepage": "https://github.com/CyComponent/CyNetworkViewerComponent",
+  "homepage": "https://github.com/CyComponent/CyViewer",
   "repository": {
     "type": "git",
-    "url": "https://github.com/CyComponent/CyNetworkViewerComponent.git"
+    "url": "https://github.com/CyComponent/CyViewer.git"
   },
   "bugs": {
-    "url": "https://github.com/CyComponent/CyNetworkViewerComponent/issues"
+    "url": "https://github.com/CyComponent/CyViewer/issues"
   },
   "dependencies": {
     "cytoscape": "^2.7.10",

@@ -11,7 +11,6 @@ class CytoscapeJsRenderer extends Component {
 
     this.state = {
       rendered: false,
-      vs: 'default',
       currentLayout: null
     }
   }
@@ -41,16 +40,12 @@ class CytoscapeJsRenderer extends Component {
     cy.add(network.elements.nodes)
     cy.add(network.elements.edges)
     cy.fit()
-    console.log("=========== CytoscapeJS rendered network ==========");
+    console.log("=========== CytoscapeJS rendered network data ==========");
   }
 
   componentDidMount() {
     // Create Cytoscape.js instance here, only once!
     let visualStyle = this.props.networkStyle
-
-    console.log("Initial style: ------------")
-    console.log(visualStyle)
-
 
     if(visualStyle === undefined || visualStyle === null) {
       visualStyle = config.DEF_VS
@@ -127,8 +122,10 @@ class CytoscapeJsRenderer extends Component {
     } else if (command === 'zoomIn') {
       cy.zoom(cy.zoom() * 1.2)
     } else if (command === 'zoomOut') {
-      cy.zoom(cy.zoom() * 0.8)
+      cy.zoom(cy.zoom() * 1.2)
     }
+
+    this.props.eventHandlers.commandFinished(command);
   }
 
   applyLayout = layout => {
@@ -163,6 +160,8 @@ class CytoscapeJsRenderer extends Component {
           break;
 
         case config.CY_EVENTS.boxselect:
+
+          // Handle multiple selection
           if(this.state.boxSelection) {
             const nodes = cy.$('node:selected').map(node=> {
 
@@ -208,9 +207,8 @@ class CytoscapeJsRenderer extends Component {
 
 
   render() {
-
-    console.log('----- Render called in leaf component-----')
-    console.log(this.props.network)
+    console.log('----- @Render called in leaf component-----')
+    console.log(this.props.eventHandlers)
 
     return (
       <div ref={(cyjs) => this.cyjs = cyjs} style={this.props.style} />

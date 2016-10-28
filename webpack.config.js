@@ -4,12 +4,12 @@ var webpack = require('webpack');
 module.exports = {
   cache: true,
   devtool: 'source-map',
-  entry: path.resolve(__dirname, "src/CyNetworkViewerComponent.jsx"),
+  entry: path.resolve(__dirname, "src/CyViewer.jsx"),
   output: {
     path: path.resolve(__dirname, "build"),
-    library: "CyNetworkViewerComponent",
+    library: "CyViewer",
     libraryTarget: "umd",
-    filename: "CyNetworkViewerComponent.js"
+    filename: "CyViewer.js"
   },
   resolve: {
     root: __dirname,
