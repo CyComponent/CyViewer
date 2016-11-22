@@ -1,28 +1,40 @@
-# CyNetworkViewerComponent
+# CyViewer
 
-A React component for network data visualization
+A React component for network data visualization using Cytoscape.js.
 
 ## What's this?
-This is a pure react component for visualizing graph data sets.
-
+This is a pure React component for visualizing graph data sets.
+Designed to consume CX as the input data. 
  
 ## How to use
-Check ```/example``` directory for sample application.
+To build and use this component, you need Node.js. 
+
+```/example``` directory contains simple application using this React 
+component.
+
+To start, just cd to the directory and run:
+
+```
+npm install && npm run dev
+```
+
+and then open ```http://localhost:8080/```
 
 
-## Used Frameworks
+## Frameworks Used:
+
 ### Dependency
-- React
-- Immutable
+- React.js
+- Immutable.js
+- Cytoscape.js
 
 ### Development Tools
 - Webpack
 - Babel (es6,jsx supported!)
 - ESLint
-- Jest
-- Travis
+- Jest for testing
 
-### Commands
+## Commands
 
 ```
 npm run build - Build the component into /build

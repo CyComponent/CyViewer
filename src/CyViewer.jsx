@@ -8,6 +8,10 @@ import CytoscapeJsRenderer from './CytoscapeJsRenderer'
 // Base style for the region for the network renderer
 const STYLE = { width: '100%', height: '100%' };
 
+const TYPE_CX = 'cx'
+const TYPE_CYJS = 'cyjs'
+
+
 // Empty Cytocape.js network
 const EMPTY_NET = {
   data: {},
@@ -162,13 +166,21 @@ class CyViewer extends Component {
   }
 
   componentWillMount() {
-    this.cx2js(this.props.cxNetwork);
+
+    if(this.props.networkType === TYPE_CX) {
+      this.cx2js(this.props.network);
+    } else {
+      this.setState({
+        cyjsNetwork: this.props.network,
+        networkId: shortid.generate()
+      })
+    }
   }
 
   componentWillReceiveProps(nextProps) {
-    if(this.props.cxNetwork !== nextProps.cxNetwork) {
+    if(this.props.network !== nextProps.network) {
       console.log('NEED update')
-      this.cx2js(nextProps.cxNetwork);
+      this.cx2js(nextProps.network);
     }
   }
 
@@ -212,7 +224,10 @@ class CyViewer extends Component {
 
 CyViewer.propTypes = {
   // Network data in CX
-  cxNetwork: PropTypes.array,
+  network: PropTypes.any,
+
+  // Type of network data.  Default is CX.
+  networkType: PropTypes.string,
 
   // Style of the area used by the renderer
   style: PropTypes.object,
@@ -236,7 +251,8 @@ CyViewer.propTypes = {
 
 
 CyViewer.defaultProps = {
-  cxNetwork: [],
+  network: null,
+  networkType: TYPE_CX,
   command: null,
   style: STYLE,
   eventHandlers: DEF_EVENT_HANDLERS.toJS(),

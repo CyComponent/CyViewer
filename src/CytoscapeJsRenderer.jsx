@@ -45,13 +45,12 @@ class CytoscapeJsRenderer extends Component {
 
   componentDidMount() {
     // Create Cytoscape.js instance here, only once!
-    let visualStyle = this.props.networkStyle
+    let visualStyle = this.props.networkStyle.style
 
     if(visualStyle === undefined || visualStyle === null) {
       visualStyle = config.DEF_VS
-    } else {
-      visualStyle = visualStyle.style
     }
+
 
     const cy = cytoscape(
       Object.assign(
@@ -122,7 +121,7 @@ class CytoscapeJsRenderer extends Component {
     } else if (command === 'zoomIn') {
       cy.zoom(cy.zoom() * 1.2)
     } else if (command === 'zoomOut') {
-      cy.zoom(cy.zoom() * 1.2)
+      cy.zoom(cy.zoom() * 0.8)
     }
 
     this.props.eventHandlers.commandFinished(command);
@@ -135,6 +134,11 @@ class CytoscapeJsRenderer extends Component {
       })
       this.setState({currentLayout: layout})
     }
+  }
+
+  findPath = (s, g) => {
+    const aStar = this.state.cyjs.elements().aStar({ root: "#" + s, goal: "#"+ g });
+    aStar.path.select();
   }
 
 
@@ -182,6 +186,7 @@ class CytoscapeJsRenderer extends Component {
               const nodeData = target.data()
               const nodeId = nodeData.id
               nodeProps[nodeId] = nodeData
+              this.findPath(nodeId, '4464')
               this.props.eventHandlers.selectNodes([nodeId], nodeProps)
             } else {
               const edgeData = target.data()

@@ -18,6 +18,7 @@ function selectNodes(nodeIds, nodeProps) {
   console.log('====== Custom node select function called! ========');
   console.log('Selected Node ID: ' + nodeIds)
   console.log(nodeProps)
+  console.log(nodeProps[nodeIds[0]])
 }
 
 function selectEdges(edgeIds, edgeProps) {
@@ -36,7 +37,7 @@ const custom = {
 // React Application implemented as a stateless functional component
 const App = props =>
   <section style={props.appStyle}>
-    <h2 style={props.titleStyle}>Rendering sample with React only</h2>
+    <h2 style={props.titleStyle}>AtgO rendered by new viewer</h2>
     <CyViewer
       {...props}
     />
@@ -66,44 +67,87 @@ const titleStyle = {
   paddingLeft: '0.8em',
 };
 
+
+const sizeCalculator = ele => {
+  const size = ele.data('Size')
+  if(size !== undefined) {
+    return Math.log(size) * 30
+  } else {
+    return 10
+  }
+}
+
+const fontSizeCalculator = ele => {
+  const size = ele.data('Size')
+  if(size !== undefined) {
+    const fontSize = Math.log(size) / 2
+    return fontSize + 'em'
+  } else {
+    return '1em'
+  }
+}
+
+const edgeColor = '#AAAAAA'
+
 const visualStyle = {
   style: [
     {
       "selector" : "node",
       "css" : {
         "font-family" : "SansSerif",
-        "shape" : "roundrectangle",
-        "background-color" : "rgb(255,255,255)",
-        "width" : 55.0,
+        "shape" : "ellipse",
+        "background-color" : 'mapData(score, 0, 1, white, #0033FF)',
+        "width" : sizeCalculator,
+        "text-margin-x": '1em',
         "text-valign" : "center",
-        "text-halign" : "center",
-        "color" : "#666666",
-        "font-size" : '0.1em',
-        "height" : 20.0,
-        "content" : "data(name)"
+        "text-halign" : "right",
+        "color": 'white',
+        "min-zoomed-font-size": '1em',
+        "font-size" : fontSizeCalculator,
+        "height" : sizeCalculator,
+        "content" : "data(Manual_Name)",
+        "text-wrap": 'wrap',
+        "text-max-width": '40em'
       }
     },
     {
       "selector" : "node:selected",
       "css" : {
-        "background-color" : "orange",
+        "background-color" : "red",
+        "color" : "red"
+      }
+    },
+    {
+      "selector" : "edge",
+      "css" : {
+        "opacity": 0.5,
+        "line-color" : edgeColor,
+        "source-arrow-shape": 'triangle',
+        "mid-source-arrow-shape": 'triangle',
+        "source-arrow-color": edgeColor,
+        "mid-source-arrow-color": edgeColor,
         "color" : "white"
       }
     },
     {
       "selector" : "edge:selected",
       "css" : {
-        "line-color" : "orange",
-        "color" : "white"
+        "line-color" : "red",
+        "color" : "white",
+        "source-arrow-color": "red",
+        "mid-source-arrow-color": "red",
+        "width": '1em'
       }
     },
   ]
 }
 
-const renderPage = cx => {
+
+const renderPage = network => {
   ReactDOM.render(
     <App
-      cxNetwork={cx}
+      network={network}
+      networkType={'cyjs'}
       style={style}
       eventHandlers={custom}
       appStyle={appStyle}
@@ -114,12 +158,13 @@ const renderPage = cx => {
   );
 };
 
-const url = 'http://dev2.ndexbio.org/rest/network/e6075843-8a70-11e6-93d8-0660b7976219/asCX';
+const url = 'http://public.ndexbio.org/rest/network/507d3d72-14e5-11e6-a1f8-06603eb7f303/asCX';
 
+const cyjsUrl = 'https://raw.githubusercontent.com/idekerlab/ontology-data-generators/master/atgo.cyjs'
 
 // Download the data and run the app
-fetch(url)
+fetch(cyjsUrl)
     .then(response => (response.json()))
-    .then(cxData => {
-      renderPage(cxData);
+    .then(network => {
+      renderPage(network);
     });
