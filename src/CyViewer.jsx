@@ -178,17 +178,15 @@ class CyViewer extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    if(this.props.network !== nextProps.network) {
+    if (this.props.networkType === TYPE_CX && this.props.network !== nextProps.network) {
       console.log('NEED update')
       this.cx2js(nextProps.network);
     }
   }
 
+
   render() {
     let network = this.state.cyjsNetwork
-
-    console.log('======NET STATE:')
-    console.log(network);
     if(network === null || network === undefined) {
       network = EMPTY_NET
     }
@@ -243,7 +241,7 @@ CyViewer.propTypes = {
 
   // Command for renderer to be executed next.
   // This is null except when something is actually running in renderer
-  command: PropTypes.string,
+  command: PropTypes.object,
 
   // Service URL to convert CX into native format
   serviceUrl: PropTypes.string

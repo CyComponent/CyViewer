@@ -51,6 +51,7 @@ const DEF_VS = [
 
 
 // Events handled by this renderer
-const SUPPORTED_EVENTS = 'data select unselect add remove boxselect boxstart'
+const SUPPORTED_EVENTS = 'data select add remove boxselect boxstart'
+// const SUPPORTED_EVENTS = 'data select unselect add remove boxselect boxstart'
 
 export { SUPPORTED_EVENTS, CY_EVENTS, DEF_BG_COLOR, DEF_LAYOUT, DEF_VS}

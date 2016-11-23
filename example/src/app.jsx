@@ -19,6 +19,7 @@ function selectNodes(nodeIds, nodeProps) {
   console.log('Selected Node ID: ' + nodeIds)
   console.log(nodeProps)
   console.log(nodeProps[nodeIds[0]])
+
 }
 
 function selectEdges(edgeIds, edgeProps) {
@@ -143,7 +144,7 @@ const visualStyle = {
 }
 
 
-const renderPage = network => {
+const renderPage = (network, command) => {
   ReactDOM.render(
     <App
       network={network}
@@ -153,6 +154,7 @@ const renderPage = network => {
       appStyle={appStyle}
       titleStyle={titleStyle}
       networkStyle={visualStyle}
+      command={command}
     />,
     document.getElementById(TAG)
   );
@@ -166,5 +168,5 @@ const cyjsUrl = 'https://raw.githubusercontent.com/idekerlab/ontology-data-gener
 fetch(cyjsUrl)
     .then(response => (response.json()))
     .then(network => {
-      renderPage(network);
+      renderPage(network, null);
     });
