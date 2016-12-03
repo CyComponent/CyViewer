@@ -30,7 +30,7 @@ module.exports = {
       {
         test: /\.(png|jpg|jpeg|svg)$/,
         loaders: ["url"]
-      }
+      },
     ]
   },
   // plugins: [

@@ -163,7 +163,8 @@ class CytoscapeJsRenderer extends Component {
     aStar.path.select();
 
 
-    console.log("@@@@@@@@@@@ Path finding end")
+    // const path = aStar.path;
+    console.log("@@@@@@ Path finding end 2")
 
   }
 
