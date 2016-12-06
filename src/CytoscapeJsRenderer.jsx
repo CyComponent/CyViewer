@@ -80,11 +80,12 @@ class CytoscapeJsRenderer extends Component {
     console.log(nextProps);
 
     const command = nextProps.command
-    if(nextProps.command === this.props.command) {
-      console.log('No need to run command')
-    } else {
+    if(nextProps.command !== this.props.command) {
       this.runCommand(command);
     }
+
+    return
+
 
     this.applyLayout(nextProps.rendererOptions.layout)
 
@@ -161,17 +162,12 @@ class CytoscapeJsRenderer extends Component {
   findPath = (s, g) => {
     const aStar = this.state.cyjs.elements().aStar({ root: "#" + s, goal: "#"+ g });
     aStar.path.select();
-
-
-    // const path = aStar.path;
-    console.log("@@@@@@ Path finding end 2")
-
   }
 
 
   cyEventHandler = event => {
 
-    console.log("*********** Handler called!")
+    console.log("*********** CyjsEvent Handler called!")
 
     const cy = this.state.cyjs
 
@@ -213,7 +209,6 @@ class CytoscapeJsRenderer extends Component {
             const nodeData = target.data()
             const nodeId = nodeData.id
             nodeProps[nodeId] = nodeData
-            // this.findPath(nodeId, '4464')
             this.props.eventHandlers.selectNodes([nodeId], nodeProps)
           } else {
             const edgeData = target.data()
