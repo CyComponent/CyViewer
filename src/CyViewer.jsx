@@ -1,5 +1,5 @@
 import React, {Component, PropTypes} from 'react'
-import Immutable from 'immutable'
+import Immutable, {Map} from 'immutable'
 import shortid from 'shortid'
 
 // Actual renderer.  For now, it is Cytoscpae.js
@@ -192,9 +192,13 @@ class CyViewer extends Component {
     }
 
     // Check style is in the network object or not
-    let vs = { style: network.style };
+    let vs = {
+      name: 'default',
+      style: network.style
+    };
     if(this.props.networkStyle !== undefined) {
       vs = this.props.networkStyle
+      vs.name = 'default'
     }
 
     return (

@@ -1,7 +1,7 @@
 import React, {Component} from 'react'
 import cytoscape from 'cytoscape'
 import * as config from './CytoscapeJsConfig'
-import {Set} from 'immutable'
+import Immutable, {Set, Map} from 'immutable'
 
 
 /**
@@ -14,6 +14,7 @@ class CytoscapeJsRenderer extends Component {
     super(props)
 
     this.state = {
+      cyjs: null,
       rendered: false,
       currentLayout: null
     }
@@ -21,22 +22,36 @@ class CytoscapeJsRenderer extends Component {
 
 
   updateCyjs = network => {
+    this.updateCyjsInternal(network, null)
+  }
+
+  updateCyjsInternal = (network, cyjs) => {
 
     // React only when network data is available.
+    console.log("=========== S1 @@@@@@@@@@@@@@@@@@@@@=");
     if(network === undefined || network === null) {
       return
     }
 
+    console.log("=========== S2 @@@@@@@@@@@@@@@@@@@@@=");
+
     // At least executed one time.
     this.setState({rendered: true})
 
-    const cy = this.state.cyjs
+    let cy = null
+
+    if(cyjs == null) {
+      cy = this.state.cyjs
+    } else {
+      cy = cyjs
+    }
+
     cy.remove(cy.elements('node'))
     cy.remove(cy.elements('edge'))
     cy.add(network.elements.nodes)
     cy.add(network.elements.edges)
     cy.fit()
-    this.setEventListener()
+    this.setEventListener(cy)
     console.log("=========== CytoscapeJS rendered network data ==========");
   }
 
@@ -44,6 +59,8 @@ class CytoscapeJsRenderer extends Component {
 
     // Create Cytoscape.js instance here, only once!
     let visualStyle = this.props.networkStyle.style
+    console.log("######### Original style name:");
+    console.log(this.props.networkStyle.name)
 
     // Use default visual style if not available.
     if(visualStyle === undefined || visualStyle === null) {
@@ -60,54 +77,68 @@ class CytoscapeJsRenderer extends Component {
             name: config.DEF_LAYOUT
           }
         }))
+    this.setState( { cyjs: cy} )
 
-    this.state.cyjs = cy
+
+    console.log('@* Cytoscape.js renderer initialized')
+    console.log(cy)
 
     // Render actual network
-    this.updateCyjs(this.props.network)
+    this.updateCyjsInternal(this.props.network, cy)
 
-    console.log('* Cytoscape.js renderer initialized: ' + cy.version)
   }
 
 
   shouldComponentUpdate(nextProps, nextState) {
     return false
-
   }
 
+  /**
+   * This is the main function to determin whether update is necessary or not.
+   */
   componentWillReceiveProps(nextProps) {
-    console.log("=========== WILL PROPS");
+    console.log("=== received new props");
     console.log(nextProps);
 
     const command = nextProps.command
-    if(nextProps.command !== this.props.command) {
+    if(command !== this.props.command) {
       this.runCommand(command);
     }
 
-    return
+      console.log("=========== Applying layout");
+      this.applyLayout(nextProps.rendererOptions.layout)
 
 
-    this.applyLayout(nextProps.rendererOptions.layout)
+    // Check visual style
+    const newVs = nextProps.networkStyle
 
-    // Style
-    let visualStyle = nextProps.networkStyle
-    if(visualStyle === undefined || visualStyle === null) {
-      visualStyle = config.DEF_VS
-    } else {
-      visualStyle = visualStyle.style
+    if(newVs !== undefined || newVS !== null) {
+      const name = this.props.networkStyle.name
+      const newName = newVs.name
+
+      if(name !== newName) {
+        console.log("=========== Apply Style ========");
+        this.state.cyjs.style(newVs.style)
+      }
     }
-    this.state.cyjs.style(visualStyle)
 
-
+    // Check status of network data
     if (nextProps === undefined || nextProps.network === undefined) {
       console.log("=========== NO DATA");
       return
     }
 
-    if (nextProps.network === this.props.network
-      && this.state.rendered === true) {
+    console.log("=========== Got DATA");
+    console.log(this.props.network);
+    console.log(nextProps.network);
+    if (nextProps.network === this.props.network) {
       return
     }
+    // if (nextProps.network === this.props.network) {
+    //   return
+    // }
+
+    console.log("===========> rendering!");
     this.updateCyjs(nextProps.network)
   }
 
@@ -151,7 +182,7 @@ class CytoscapeJsRenderer extends Component {
   }
 
   applyLayout = layout => {
-    if(layout !== undefined && this.state.currentLayout !== layout) {
+    if(layout !== undefined) {
       this.state.cyjs.layout({
         name: layout
       })
@@ -235,8 +266,7 @@ class CytoscapeJsRenderer extends Component {
   /**
    * Translate Cytoscape.js events into action calls
    */
-  setEventListener() {
-    const cy = this.state.cyjs
+  setEventListener(cy) {
     cy.on(config.SUPPORTED_EVENTS, this.cyEventHandler)
   }
 
