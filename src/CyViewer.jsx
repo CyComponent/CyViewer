@@ -46,6 +46,7 @@ const DEF_EVENT_HANDLERS = Immutable.fromJS({
    */
   selectNodes: (nodeIds, properties = {}) => {
     console.log('selectNodes called.')
+    console.log(nodeIds)
   },
 
   /**
@@ -182,14 +183,34 @@ class CyViewer extends Component {
       console.log('NEED update')
       this.cx2js(nextProps.network);
     }
+
+
+    console.log('CyViewer get prop 2}}}}}}}}}}}}}}}}}}}}}}}}')
+    console.log(nextProps)
+    console.log(this.props)
   }
 
 
   render() {
+
+    // TODO: how can I avoid using state for storing native network data?
     let network = this.state.cyjsNetwork
+
+    if(this.props.networkType === TYPE_CYJS) {
+      console.log('{{{{{{{{{{{{{{{ =============== This is JS! ======================}}}}}}}}}}}}}}}}}}}}}}}}')
+      network = this.props.network
+    }
+
+
     if(network === null || network === undefined) {
       network = EMPTY_NET
+    } else if(network.elements === undefined || network.elements === null) {
+      network = EMPTY_NET
     }
+
+    console.log('{{{{{{{{{{{{{{ CyViewer net to be rendered}}}}}}}}}}}}}}}}}}}}}}}}')
+    console.log(network)
+
 
     // Check style is in the network object or not
     let vs = {

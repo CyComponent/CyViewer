@@ -77,11 +77,12 @@ class CytoscapeJsRenderer extends Component {
             name: config.DEF_LAYOUT
           }
         }))
-    this.setState( { cyjs: cy} )
+    this.state.cyjs = cy
 
 
     console.log('@* Cytoscape.js renderer initialized')
     console.log(cy)
+    console.log(this.state)
 
     // Render actual network
     this.updateCyjsInternal(this.props.network, cy)
@@ -99,6 +100,8 @@ class CytoscapeJsRenderer extends Component {
   componentWillReceiveProps(nextProps) {
     console.log("=== received new props");
     console.log(nextProps);
+    console.log("last---")
+    console.log(this.props);
 
     const command = nextProps.command
     if(command !== this.props.command) {
@@ -128,18 +131,13 @@ class CytoscapeJsRenderer extends Component {
       return
     }
 
-    console.log("=========== Got DATA");
-    console.log(this.props.network);
-    console.log(nextProps.network);
     if (nextProps.network === this.props.network) {
       return
     }
-    // if (nextProps.network === this.props.network) {
-    //   return
-    // }
 
-    console.log("===========> rendering!");
     this.updateCyjs(nextProps.network)
+    console.log("=========== Applying layout after!");
+    this.applyLayout(nextProps.rendererOptions.layout)
   }
 
   runCommand = command => {
@@ -154,7 +152,7 @@ class CytoscapeJsRenderer extends Component {
     console.log(command)
 
     // Disable handler
-    this.state.cyjs.off(config.SUPPORTED_EVENTS, this.cyEventHandler)
+    this.state.cyjs.off(config.SUPPORTED_EVENTS)
 
     const cy = this.state.cyjs
 
@@ -197,6 +195,7 @@ class CytoscapeJsRenderer extends Component {
 
 
   cyEventHandler = event => {
+    this.state.cyjs.off(config.SUPPORTED_EVENTS)
 
     console.log("*********** CyjsEvent Handler called!")
 
@@ -261,6 +260,7 @@ class CytoscapeJsRenderer extends Component {
         break;
     }
 
+    this.state.cyjs.on(config.SUPPORTED_EVENTS, this.cyEventHandler)
   }
 
   /**
