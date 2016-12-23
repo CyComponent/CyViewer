@@ -168,8 +168,17 @@ class CytoscapeJsRenderer extends Component {
     } else if (commandName === 'findPath') {
       const startId = commandParams.startId
       const endId = commandParams.endId
-
       this.findPath(startId, endId)
+
+    } else if(commandName === 'select') {
+      const idList = commandParams.idList
+
+      const firstNode = idList[0]
+      console.log("2!!!!!!!!!!!! To be selected: " + firstNode)
+      const targets = cy.filter('node[id_original = "' + firstNode + '"]')
+      console.log(targets)
+
+      targets.select()
     }
 
     // Callback
