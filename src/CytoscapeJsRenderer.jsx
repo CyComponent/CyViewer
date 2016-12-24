@@ -178,7 +178,26 @@ class CytoscapeJsRenderer extends Component {
       const targets = cy.filter('node[id_original = "' + firstNode + '"]')
       console.log(targets)
 
+      // targets.forEach(n => {
+        console.log('222++++++++++++ selected +++++++++')
+        console.log(targets[0])
+      // })
+
+
+      const n = targets[0]
+      const position  = n.position();
+
+      console.log(cy.pan())
+      console.log(position)
+      console.log(cy.zoom())
+
       targets.select()
+
+      cy.fit(targets, 700)
+
+
+      // Zoom and pan
+
     }
 
     // Callback
