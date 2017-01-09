@@ -152,9 +152,6 @@ class CyViewer extends Component {
         return response.json()
       })
       .then(json => {
-        console.log('got restlt in CYJS')
-        console.log(json)
-
         // TODO: are there any better way to handle this?
         this.setState({
           cyjsNetwork: json,
@@ -183,11 +180,6 @@ class CyViewer extends Component {
       console.log('NEED update')
       this.cx2js(nextProps.network);
     }
-
-
-    console.log('CyViewer get prop 2}}}}}}}}}}}}}}}}}}}}}}}}')
-    console.log(nextProps)
-    console.log(this.props)
   }
 
 
@@ -207,9 +199,6 @@ class CyViewer extends Component {
     } else if(network.elements === undefined || network.elements === null) {
       network = EMPTY_NET
     }
-
-    console.log('{{{{{{{{{{{{{{ CyViewer net to be rendered}}}}}}}}}}}}}}}}}}}}}}}}')
-    console.log(network)
 
 
     // Check style is in the network object or not

@@ -33,8 +33,6 @@ class CytoscapeJsRenderer extends Component {
       return
     }
 
-    console.log("=========== S2 @@@@@@@@@@@@@@@@@@@@@=");
-
     // At least executed one time.
     this.setState({rendered: true})
 
@@ -81,8 +79,6 @@ class CytoscapeJsRenderer extends Component {
 
 
     console.log('@* Cytoscape.js renderer initialized')
-    console.log(cy)
-    console.log(this.state)
 
     // Render actual network
     this.updateCyjsInternal(this.props.network, cy)
@@ -98,18 +94,12 @@ class CytoscapeJsRenderer extends Component {
    * This is the main function to determin whether update is necessary or not.
    */
   componentWillReceiveProps(nextProps) {
-    console.log("=== received new props");
-    console.log(nextProps);
-    console.log("last---")
-    console.log(this.props);
-
     const command = nextProps.command
     if(command !== this.props.command) {
       this.runCommand(command);
     }
 
-      console.log("=========== Applying layout");
-      this.applyLayout(nextProps.rendererOptions.layout)
+    this.applyLayout(nextProps.rendererOptions.layout)
 
 
     // Check visual style
@@ -148,9 +138,6 @@ class CytoscapeJsRenderer extends Component {
       return
     }
 
-    console.log('########## Handling Command:')
-    console.log(command)
-
     // Disable handler
     this.state.cyjs.off(config.SUPPORTED_EVENTS)
 
@@ -185,12 +172,6 @@ class CytoscapeJsRenderer extends Component {
 
 
       const n = targets[0]
-      const position  = n.position();
-
-      console.log(cy.pan())
-      console.log(position)
-      console.log(cy.zoom())
-
       targets.select()
 
       cy.fit(targets, 700)
