@@ -121,7 +121,7 @@ class CyViewer extends Component {
 
     this.state = {
       cyjsNetwork: null,
-      networkId: shortid.generate(),
+      networkId: '',
     }
   }
 
@@ -176,9 +176,18 @@ class CyViewer extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
+    console.log('==========>>>>>> NEXT prop for network viewer')
+    console.log(nextProps)
+
+
     if (this.props.networkType === TYPE_CX && this.props.network !== nextProps.network) {
       console.log('NEED update')
       this.cx2js(nextProps.network);
+    } else {
+      // This is a Cytoscape.js network
+      this.setState({
+        networkId: shortid.generate()
+      })
     }
   }
 
@@ -189,7 +198,6 @@ class CyViewer extends Component {
     let network = this.state.cyjsNetwork
 
     if(this.props.networkType === TYPE_CYJS) {
-      console.log('{{{{{{{{{{{{{{{ =============== This is JS! ======================}}}}}}}}}}}}}}}}}}}}}}}}')
       network = this.props.network
     }
 
@@ -211,6 +219,7 @@ class CyViewer extends Component {
       vs.name = 'default'
     }
 
+    console.log('==========>>>>>> RENDER2 for network viewer')
     return (
       <CytoscapeJsRenderer
         {...this.props}

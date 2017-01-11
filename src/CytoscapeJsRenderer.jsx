@@ -94,12 +94,23 @@ class CytoscapeJsRenderer extends Component {
    * This is the main function to determin whether update is necessary or not.
    */
   componentWillReceiveProps(nextProps) {
+    console.log("------------------------------------------------------------------------------------------");
+
+    // Check status of network data
+    if (nextProps === undefined || nextProps.network === undefined) {
+      console.log("=========== NO DATA");
+      return
+    }
+
+
+    console.log("2------------------------------------------------------------------------------------------");
+
     const command = nextProps.command
     if(command !== this.props.command) {
       this.runCommand(command);
     }
 
-    this.applyLayout(nextProps.rendererOptions.layout)
+    // this.applyLayout(nextProps.rendererOptions.layout)
 
 
     // Check visual style
@@ -110,18 +121,16 @@ class CytoscapeJsRenderer extends Component {
       const newName = newVs.name
 
       if(name !== newName) {
-        console.log("=========== Apply Style ========");
+        console.log("=========== Apply NEW Style =========================================");
         this.state.cyjs.style(newVs.style)
       }
     }
 
-    // Check status of network data
-    if (nextProps === undefined || nextProps.network === undefined) {
-      console.log("=========== NO DATA");
+    if (nextProps.network === this.props.network) {
       return
     }
-
-    if (nextProps.network === this.props.network) {
+    if(this.props.networkId === nextProps.networkId) {
+      console.log("=========== SAME DATA");
       return
     }
 
@@ -131,6 +140,9 @@ class CytoscapeJsRenderer extends Component {
   }
 
   runCommand = command => {
+
+    console.log('++++++++++++ COMMAND +++++++++')
+    console.log(command)
 
     // Execute Cytoscape command
     if (command === null) {
@@ -165,16 +177,13 @@ class CytoscapeJsRenderer extends Component {
       const targets = cy.filter('node[id_original = "' + firstNode + '"]')
       console.log(targets)
 
-      // targets.forEach(n => {
-        console.log('222++++++++++++ selected +++++++++')
-        console.log(targets[0])
-      // })
-
+      console.log('222++++++++++++ selected +++++++++')
+      console.log(targets[0])
 
       const n = targets[0]
       targets.select()
 
-      cy.fit(targets, 700)
+      // cy.fit(targets, 700)
 
 
       // Zoom and pan
