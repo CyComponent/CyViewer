@@ -172,21 +172,16 @@ class CytoscapeJsRenderer extends Component {
     } else if(commandName === 'select') {
       const idList = commandParams.idList
 
-      const firstNode = idList[0]
+      const firstNode = idList[0].replace(/\:/, '\\:')
+
       console.log("2!!!!!!!!!!!! To be selected: " + firstNode)
-      const targets = cy.filter('node[id_original = "' + firstNode + '"]')
-      console.log(targets)
+      const target = cy.elements('#' + firstNode)
+      console.log(target)
 
+      target.select()
       console.log('222++++++++++++ selected +++++++++')
-      console.log(targets[0])
 
-      const n = targets[0]
-      targets.select()
-
-      // cy.fit(targets, 700)
-
-
-      // Zoom and pan
+      cy.fit(target, 500)
 
     }
 
