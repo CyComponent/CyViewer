@@ -172,16 +172,42 @@ class CytoscapeJsRenderer extends Component {
     } else if(commandName === 'select') {
       const idList = commandParams.idList
 
-      const firstNode = idList[0].replace(/\:/, '\\:')
+      let selected = idList.map(id => (id.replace(/\:/, '\\:')))
+      selected = selected.map(id=>('#' + id))
+      console.log(selected)
 
-      console.log("2!!!!!!!!!!!! To be selected: " + firstNode)
-      const target = cy.elements('#' + firstNode)
+      console.log("2!!!!!!!!!!!! To be selected:")
+      const strVal = selected.toString()
+
+      console.log(strVal)
+
+
+      const target = cy.elements(strVal)
+
       console.log(target)
 
-      target.select()
-      console.log('222++++++++++++ selected +++++++++')
+      cy.elements().addClass('faded')
+      target.removeClass('faded')
 
-      cy.fit(target, 500)
+      target.select()
+      console.log('222++++++++++++ selected node list +++++++++')
+
+      // cy.fit(target, 500)
+    } else if(commandName === 'focus') {
+      const idList = commandParams.idList
+
+      let selected = idList.map(id => (id.replace(/\:/, '\\:')))
+      selected = selected.map(id=>('#' + id))
+      const strVal = selected.toString()
+
+      const target = cy.elements(strVal)
+      cy.elements().addClass('faded')
+      cy.elements().removeClass('focused')
+      target.removeClass('faded')
+      target.addClass('focused')
+
+      cy.fit(target, 400)
+      console.log('++++++++++++ FIT +++++++++')
 
     }
 
@@ -281,6 +307,12 @@ class CytoscapeJsRenderer extends Component {
    */
   setEventListener(cy) {
     cy.on(config.SUPPORTED_EVENTS, this.cyEventHandler)
+
+    cy.on('tap', function(e){
+      if( e.cyTarget === cy ){
+        cy.elements().removeClass('faded focused');
+      }
+    })
   }
 
 
