@@ -28,10 +28,12 @@ class CytoscapeJsRenderer extends Component {
   updateCyjsInternal = (network, cyjs) => {
 
     // React only when network data is available.
-    console.log("=========== S1 @@@@@@@@@@@@@@@@@@@@@=");
     if(network === undefined || network === null) {
       return
     }
+
+    console.log("CYJS UPDATE function for ------------------------------------------------------------------------------------------");
+    console.log(network.data.name)
 
     // At least executed one time.
     this.setState({rendered: true})
@@ -48,6 +50,12 @@ class CytoscapeJsRenderer extends Component {
     cy.remove(cy.elements('edge'))
     cy.add(network.elements.nodes)
     cy.add(network.elements.edges)
+
+    const layout = this.props.rendererOptions.layout
+    if(layout !== undefined && layout !== null) {
+      console.log("Layout")
+      this.applyLayout(layout)
+    }
     cy.fit()
     this.setEventListener(cy)
     console.log("=========== CytoscapeJS rendered network data ==========");
@@ -77,9 +85,6 @@ class CytoscapeJsRenderer extends Component {
         }))
     this.state.cyjs = cy
 
-
-    console.log('@* Cytoscape.js renderer initialized')
-
     // Render actual network
     this.updateCyjsInternal(this.props.network, cy)
 
@@ -95,6 +100,8 @@ class CytoscapeJsRenderer extends Component {
    */
   componentWillReceiveProps(nextProps) {
     console.log("------------------------------------------------------------------------------------------");
+
+    console.log(nextProps)
 
     // Check status of network data
     if (nextProps === undefined || nextProps.network === undefined) {
@@ -127,6 +134,7 @@ class CytoscapeJsRenderer extends Component {
     }
 
     if (nextProps.network === this.props.network) {
+      console.log("=========== SAME NET");
       return
     }
     if(this.props.networkId === nextProps.networkId) {
@@ -219,6 +227,9 @@ class CytoscapeJsRenderer extends Component {
   }
 
   applyLayout = layout => {
+    console.log('++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++APPLY LAY +++++++++')
+    console.log(layout)
+
     if(layout !== undefined) {
       this.state.cyjs.layout({
         name: layout

@@ -176,9 +176,6 @@ class CyViewer extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    console.log('==========>>>>>> NEXT prop for network viewer')
-    console.log(nextProps)
-
 
     if (this.props.networkType === TYPE_CX && this.props.network !== nextProps.network) {
       console.log('NEED update')
@@ -219,7 +216,6 @@ class CyViewer extends Component {
       vs.name = 'default'
     }
 
-    console.log('==========>>>>>> RENDER2 for network viewer')
     return (
       <CytoscapeJsRenderer
         {...this.props}
