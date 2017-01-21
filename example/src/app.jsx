@@ -155,6 +155,7 @@ const renderPage = (network, command) => {
       titleStyle={titleStyle}
       networkStyle={visualStyle}
       command={command}
+      rendererOptions={{layout: 'concentric'}}
     />,
     document.getElementById(TAG)
   );

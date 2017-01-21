@@ -1,7 +1,7 @@
 import React, {Component} from 'react'
 import cytoscape from 'cytoscape'
+
 import * as config from './CytoscapeJsConfig'
-import Immutable, {Set, Map} from 'immutable'
 
 
 /**
@@ -32,11 +32,12 @@ class CytoscapeJsRenderer extends Component {
       return
     }
 
-    console.log("CYJS UPDATE function for ------------------------------------------------------------------------------------------");
-    console.log(network.data.name)
+    if(network.elements.nodes.length === 0) {
+      return
+    }
 
-    // At least executed one time.
-    this.setState({rendered: true})
+    console.log("CYJS UPDATE function for ------------------------------------------------------------------------------------------");
+    console.log(network)
 
     let cy = null
 
@@ -53,11 +54,15 @@ class CytoscapeJsRenderer extends Component {
 
     const layout = this.props.rendererOptions.layout
     if(layout !== undefined && layout !== null) {
-      console.log("Layout")
+      console.log("Layout-----------------------------------------------")
+      console.log(layout)
       this.applyLayout(layout)
     }
     cy.fit()
     this.setEventListener(cy)
+
+    // At least executed one time.
+    this.setState({rendered: true})
     console.log("=========== CytoscapeJS rendered network data ==========");
   }
 
@@ -87,7 +92,6 @@ class CytoscapeJsRenderer extends Component {
 
     // Render actual network
     this.updateCyjsInternal(this.props.network, cy)
-
   }
 
 
@@ -101,8 +105,6 @@ class CytoscapeJsRenderer extends Component {
   componentWillReceiveProps(nextProps) {
     console.log("------------------------------------------------------------------------------------------");
 
-    console.log(nextProps)
-
     // Check status of network data
     if (nextProps === undefined || nextProps.network === undefined) {
       console.log("=========== NO DATA");
@@ -110,12 +112,10 @@ class CytoscapeJsRenderer extends Component {
     }
 
 
-    console.log("2------------------------------------------------------------------------------------------");
-
-    const command = nextProps.command
-    if(command !== this.props.command) {
-      this.runCommand(command);
-    }
+    // const command = nextProps.command
+    // if(command !== this.props.command) {
+    //   this.runCommand(command);
+    // }
 
     // this.applyLayout(nextProps.rendererOptions.layout)
 
@@ -143,14 +143,21 @@ class CytoscapeJsRenderer extends Component {
     }
 
     this.updateCyjs(nextProps.network)
-    console.log("=========== Applying layout after!");
-    this.applyLayout(nextProps.rendererOptions.layout)
+    // console.log("=========== Applying layout after!");
+    // this.applyLayout(nextProps.rendererOptions.layout)
+
+    const command = nextProps.command
+    if(command !== this.props.command) {
+      this.runCommand(command);
+    }
   }
 
   runCommand = command => {
 
     console.log('++++++++++++ COMMAND +++++++++')
     console.log(command)
+    console.log("command for ------------------------------------------------------------------------------------------");
+    console.log(this.props.network)
 
     // Execute Cytoscape command
     if (command === null) {
@@ -217,6 +224,19 @@ class CytoscapeJsRenderer extends Component {
       cy.fit(target, 400)
       console.log('++++++++++++ FIT +++++++++')
 
+    } else if (commandName === 'filter') {
+      const options = commandParams.options
+
+      const filterType = options.type
+
+
+      if(filterType === 'numeric') {
+        const range = options.range
+        const toBeShown = cy.elements(range)
+        cy.edges().addClass('dark')
+        toBeShown.removeClass('dark')
+        console.log('++++++++++++ hidden!! +++++++++')
+      }
     }
 
     // Callback
@@ -230,15 +250,20 @@ class CytoscapeJsRenderer extends Component {
     console.log('++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++APPLY LAY +++++++++')
     console.log(layout)
 
+    const cy = this.state.cyjs;
+
     if(layout !== undefined) {
-      this.state.cyjs.layout({
-        name: layout
-      })
+      cy.layout({
+          name: layout
+        })
+
       this.setState({currentLayout: layout})
     }
   }
 
   findPath = (s, g) => {
+    return;
+
     const aStar = this.state.cyjs.elements().aStar({ root: "#" + s, goal: "#"+ g });
     aStar.path.select();
   }
