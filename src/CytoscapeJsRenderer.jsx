@@ -96,6 +96,7 @@ class CytoscapeJsRenderer extends Component {
 
 
   shouldComponentUpdate(nextProps, nextState) {
+    // Update is controlled by componentWillReceiveProps()
     return false
   }
 
@@ -103,7 +104,10 @@ class CytoscapeJsRenderer extends Component {
    * This is the main function to determin whether update is necessary or not.
    */
   componentWillReceiveProps(nextProps) {
-    console.log("------------------------------------------------------------------------------------------");
+    console.log("\n\n%CyView update------------------------------------------------------------------------------------------");
+
+    console.log(this.props)
+    console.log(nextProps)
 
     // Check status of network data
     if (nextProps === undefined || nextProps.network === undefined) {
@@ -128,7 +132,7 @@ class CytoscapeJsRenderer extends Component {
       const newName = newVs.name
 
       if(name !== newName) {
-        console.log("=========== Apply NEW Style =========================================");
+        console.log("=========== <<<<<<< Apply NEW Style =========================================");
         this.state.cyjs.style(newVs.style)
       }
     }
@@ -137,6 +141,7 @@ class CytoscapeJsRenderer extends Component {
       console.log("=========== SAME NET");
       return
     }
+
     if(this.props.networkId === nextProps.networkId) {
       console.log("=========== SAME DATA");
       return
@@ -233,9 +238,13 @@ class CytoscapeJsRenderer extends Component {
       if(filterType === 'numeric') {
         const range = options.range
         const toBeShown = cy.elements(range)
+
         cy.edges().addClass('dark')
+
+        console.log("**shown edges")
+        console.log(toBeShown)
         toBeShown.removeClass('dark')
-        console.log('++++++++++++ hidden!! +++++++++')
+        console.log('++++++++++++ hidden2!! +++++++++')
       }
     }
 

@@ -121,7 +121,7 @@ class CyViewer extends Component {
 
     this.state = {
       cyjsNetwork: null,
-      networkId: '',
+      networkId: null,
     }
   }
 
@@ -182,14 +182,29 @@ class CyViewer extends Component {
       this.cx2js(nextProps.network);
     } else {
       // This is a Cytoscape.js network
+      // this.setState({
+      //   networkId: shortid.generate()
+      // })
+    }
+
+    if (nextProps.network === this.props.network) {
+      console.log("GOt SAME NET data!!!");
+    } else {
+      console.log("@ID UPDATED");
       this.setState({
         networkId: shortid.generate()
       })
+
     }
   }
 
 
   render() {
+    if(this.props.network === null) {
+      return (<div></div>)
+    }
+
+
 
     // TODO: how can I avoid using state for storing native network data?
     let network = this.state.cyjsNetwork
@@ -208,12 +223,12 @@ class CyViewer extends Component {
 
     // Check style is in the network object or not
     let vs = {
-      name: 'default',
+      name: this.state.networkId,
       style: network.style
     };
     if(this.props.networkStyle !== undefined) {
       vs = this.props.networkStyle
-      vs.name = 'default'
+      vs.name = this.state.networkId
     }
 
     return (
