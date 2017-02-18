@@ -115,11 +115,12 @@ class CytoscapeJsRenderer extends Component {
       return
     }
 
+    let commandExecuted = false
 
-    // const command = nextProps.command
-    // if(command !== this.props.command) {
-    //   this.runCommand(command);
-    // }
+    const command = nextProps.command
+    if(command !== this.props.command) {
+      this.runCommand(command);
+    }
 
     // this.applyLayout(nextProps.rendererOptions.layout)
 
@@ -151,10 +152,10 @@ class CytoscapeJsRenderer extends Component {
     // console.log("=========== Applying layout after!");
     // this.applyLayout(nextProps.rendererOptions.layout)
 
-    const command = nextProps.command
-    if(command !== this.props.command) {
-      this.runCommand(command);
-    }
+    // const command = nextProps.command
+    // if(command !== this.props.command) {
+    //   this.runCommand(command);
+    // }
   }
 
   runCommand = command => {
@@ -214,6 +215,8 @@ class CytoscapeJsRenderer extends Component {
 
       // cy.fit(target, 500)
     } else if(commandName === 'focus') {
+
+      console.log('+++ Focus to a node +++++++++')
       const idList = commandParams.idList
 
       let selected = idList.map(id => (id.replace(/\:/, '\\:')))
