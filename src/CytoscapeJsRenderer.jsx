@@ -193,18 +193,20 @@ class CytoscapeJsRenderer extends Component {
       // Select neighbour
       const sourceNode = cy.$('#' + startId)
       const sourcePos = sourceNode.position()
-      let idx = 1
+      let idx = 0
 
       sourceNode.incomers().select().nodes()
         .forEach(node => {
           console.log('___ NODE')
           console.log(node)
           console.log(node.data('id'))
-          node.position({
-            x: 1600,
-            y: sourcePos.y + (idx*20)
-          })
-          idx++
+          if(node.data('Gene_or_Term') === 'Gene') {
+            node.position({
+              x: 1600,
+              y: sourcePos.y + (idx*30)
+            })
+            idx++
+          }
         });
 
     } else if(commandName === 'select') {
