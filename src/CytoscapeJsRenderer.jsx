@@ -190,6 +190,23 @@ class CytoscapeJsRenderer extends Component {
       const endId = commandParams.endId
       this.findPath(startId, endId)
 
+      // Select neighbour
+      const sourceNode = cy.$('#' + startId)
+      const sourcePos = sourceNode.position()
+      let idx = 1
+
+      sourceNode.incomers().select().nodes()
+        .forEach(node => {
+          console.log('___ NODE')
+          console.log(node)
+          console.log(node.data('id'))
+          node.position({
+            x: 1600,
+            y: sourcePos.y + (idx*20)
+          })
+          idx++
+        });
+
     } else if(commandName === 'select') {
       const idList = commandParams.idList
 
