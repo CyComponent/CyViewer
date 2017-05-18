@@ -274,8 +274,6 @@ class CytoscapeJsRenderer extends Component {
   }
 
   findPath = (s, g) => {
-    return;
-
     const aStar = this.state.cyjs.elements().aStar({ root: "#" + s, goal: "#"+ g });
     aStar.path.select();
   }
