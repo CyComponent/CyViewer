@@ -229,8 +229,18 @@ class CytoscapeJsRenderer extends Component {
       target.removeClass('faded')
       target.addClass('focused')
 
-      cy.fit(target, 400)
-      console.log('++++++++++++ FIT +++++++++')
+      const w = cy.width()
+      const h = cy.height()
+      let padding = 100
+      if(w > h) {
+        padding = h * 0.4
+      } else {
+        padding = w * 0.4
+      }
+
+      cy.fit(target, padding)
+
+      console.log('++++++++++++ FIT OK +++++++++')
 
     } else if (commandName === 'filter') {
       const options = commandParams.options
