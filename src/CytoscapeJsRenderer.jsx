@@ -16,7 +16,8 @@ class CytoscapeJsRenderer extends Component {
     this.state = {
       cyjs: null,
       rendered: false,
-      currentLayout: null
+      currentLayout: null,
+      allElements: null
     }
   }
 
@@ -47,19 +48,35 @@ class CytoscapeJsRenderer extends Component {
       cy = cyjs
     }
 
+    cy.startBatch();
+
+    var t0 = performance.now();
+
     cy.remove(cy.elements('node'))
     cy.remove(cy.elements('edge'))
     cy.add(network.elements.nodes)
     cy.add(network.elements.edges)
 
+    var t1 = performance.now();
+    console.log("Call to doSomething took " + (t1 - t0) + " milliseconds.")
+
+
+    this.setState({
+      allElements: cy.elements()
+    })
+
+    t0 = performance.now();
     const layout = this.props.rendererOptions.layout
     if(layout !== undefined && layout !== null) {
-      console.log("Layout-----------------------------------------------")
-      console.log(layout)
       this.applyLayout(layout)
     }
     cy.fit()
     this.setEventListener(cy)
+
+    t1 = performance.now();
+    console.log("Call layout 2 took " + (t1 - t0) + " milliseconds.")
+
+    cy.endBatch();
 
     // At least executed one time.
     this.setState({rendered: true})
@@ -70,8 +87,6 @@ class CytoscapeJsRenderer extends Component {
 
     // Create Cytoscape.js instance here, only once!
     let visualStyle = this.props.networkStyle.style
-    console.log("######### Original style name:");
-    console.log(this.props.networkStyle.name)
 
     // Use default visual style if not available.
     if(visualStyle === undefined || visualStyle === null) {
@@ -84,6 +99,9 @@ class CytoscapeJsRenderer extends Component {
           container: this.cyjs,
           elements: [],
           style: visualStyle,
+          hideEdgesOnViewport: true,
+          hideLabelsOnViewport: true,
+          wheelSensitivity: 0.5,
           layout: {
             name: config.DEF_LAYOUT
           }
@@ -161,9 +179,6 @@ class CytoscapeJsRenderer extends Component {
   runCommand = command => {
 
     console.log('++++++++++++ COMMAND +++++++++')
-    console.log(command)
-    console.log("command for ------------------------------------------------------------------------------------------");
-    console.log(this.props.network)
 
     // Execute Cytoscape command
     if (command === null) {
@@ -195,25 +210,16 @@ class CytoscapeJsRenderer extends Component {
 
       let selected = idList.map(id => (id.replace(/\:/, '\\:')))
       selected = selected.map(id=>('#' + id))
-      console.log(selected)
 
-      console.log("2!!!!!!!!!!!! To be selected:")
       const strVal = selected.toString()
-
       console.log(strVal)
-
 
       const target = cy.elements(strVal)
 
-      console.log(target)
-
-      cy.elements().addClass('faded')
-      target.removeClass('faded')
-
+      // cy.elements().addClass('faded')
+      // target.removeClass('faded')
       target.select()
-      console.log('222++++++++++++ selected node list +++++++++')
 
-      // cy.fit(target, 500)
     } else if(commandName === 'focus') {
 
       console.log('+++ Focus to a node +++++++++')
@@ -224,9 +230,14 @@ class CytoscapeJsRenderer extends Component {
       const strVal = selected.toString()
 
       const target = cy.elements(strVal)
-      cy.elements().addClass('faded')
-      cy.elements().removeClass('focused')
-      target.removeClass('faded')
+
+      cy.startBatch();
+      var t0 = performance.now();
+
+      this.state.allElements.addClass('faded')
+      //this.state.allElements.removeClass('focused')
+
+      //target.removeClass('faded')
       target.addClass('focused')
 
       const w = cy.width()
@@ -240,7 +251,12 @@ class CytoscapeJsRenderer extends Component {
 
       cy.fit(target, padding)
 
-      console.log('++++++++++++ FIT OK +++++++++')
+      var t1 = performance.now();
+      console.log("Call to FOCUS took " + (t1 - t0) + " milliseconds.")
+
+      cy.endBatch();
+
+      console.log('++++++++++++ FIT OK4 +++++++++')
 
     } else if (commandName === 'filter') {
       const options = commandParams.options
@@ -366,7 +382,10 @@ class CytoscapeJsRenderer extends Component {
 
     cy.on('tap', function(e){
       if( e.cyTarget === cy ){
+
+        cy.startBatch();
         cy.elements().removeClass('faded focused');
+        cy.endBatch();
       }
     })
   }
