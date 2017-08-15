@@ -395,17 +395,19 @@ class CytoscapeJsRenderer extends Component {
 
     document.addEventListener('mousewheel', e => {
 
-      cy.startBatch();
-      const zoomLevel = cy.zoom()
-      console.log(zoomLevel)
+      setTimeout(() => {
+        cy.startBatch();
+        const zoomLevel = cy.zoom()
+        // console.log(zoomLevel)
 
-      if (zoomLevel > 0.1) {
-        this.state.genes.classes()
-      } else {
-        this.state.genes.addClass('invisible')
-      }
+        if (zoomLevel > 0.1) {
+          this.state.genes.classes()
+        } else {
+          this.state.genes.addClass('invisible')
+        }
 
-      cy.endBatch();
+        cy.endBatch();
+      }, 300)
 
     })
 
