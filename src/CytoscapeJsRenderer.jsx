@@ -3,7 +3,6 @@ import cytoscape from 'cytoscape'
 
 import * as config from './CytoscapeJsConfig'
 
-
 /**
  * Renderer using Cytoscape.js
  *
@@ -17,7 +16,9 @@ class CytoscapeJsRenderer extends Component {
       cyjs: null,
       rendered: false,
       currentLayout: null,
-      allElements: null
+      allElements: null,
+      genes: null,
+      zoom: false
     }
   }
 
@@ -60,9 +61,12 @@ class CytoscapeJsRenderer extends Component {
     var t1 = performance.now();
     console.log("Call to doSomething took " + (t1 - t0) + " milliseconds.")
 
+    const genes = cy.elements('node[type = \'g\']')
+    genes.addClass('invisible')
 
     this.setState({
-      allElements: cy.elements()
+      allElements: cy.elements(),
+      genes: genes
     })
 
     t0 = performance.now();
@@ -377,17 +381,34 @@ class CytoscapeJsRenderer extends Component {
   /**
    * Translate Cytoscape.js events into action calls
    */
-  setEventListener(cy) {
+  setEventListener = cy => {
     cy.on(config.SUPPORTED_EVENTS, this.cyEventHandler)
 
     cy.on('tap', function(e){
       if( e.cyTarget === cy ){
 
         cy.startBatch();
-        cy.elements().removeClass('faded focused');
+        this.state.allElements.removeClass('faded focused');
         cy.endBatch();
       }
     })
+
+    document.addEventListener('mousewheel', e => {
+
+      cy.startBatch();
+      const zoomLevel = cy.zoom()
+      console.log(zoomLevel)
+
+      if (zoomLevel > 0.1) {
+        this.state.genes.classes()
+      } else {
+        this.state.genes.addClass('invisible')
+      }
+
+      cy.endBatch();
+
+    })
+
   }
 
 
