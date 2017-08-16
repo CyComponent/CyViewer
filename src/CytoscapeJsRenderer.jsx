@@ -384,7 +384,7 @@ class CytoscapeJsRenderer extends Component {
   setEventListener = cy => {
     cy.on(config.SUPPORTED_EVENTS, this.cyEventHandler)
 
-    cy.on('tap', function(e){
+    cy.on('tap', e => {
       if( e.cyTarget === cy ){
 
         cy.startBatch();
