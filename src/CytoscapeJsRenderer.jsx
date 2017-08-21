@@ -210,7 +210,17 @@ class CytoscapeJsRenderer extends Component {
       this.findPath(startId, endId)
 
     } else if(commandName === 'select') {
+      console.log('+++ SELECT>>>>>>>>>>>>>>>>>>> +++++++++')
+
       const idList = commandParams.idList
+      const edges = commandParams.edges
+
+      console.log(idList)
+      console.log(edges)
+
+      cy.startBatch()
+
+
 
       let selected = idList.map(id => (id.replace(/\:/, '\\:')))
       selected = selected.map(id=>('#' + id))
@@ -220,25 +230,70 @@ class CytoscapeJsRenderer extends Component {
 
       const target = cy.elements(strVal)
 
+      console.log("******** TARGETS")
+      console.log(target)
+
       // cy.elements().addClass('faded')
       // target.removeClass('faded')
       target.select()
 
+      // Select edges
+
+      if(edges !== undefined && edges !== null) {
+        let sources = edges.map(edge => (edge.source.replace(/\:/, '\\:')))
+        sources = sources.map(source=>('#' + source))
+
+        let ts = edges.map(edge => (edge.target.replace(/\:/, '\\:')))
+        ts = ts.map(target=>('#' + target))
+
+        for(let i=0; i< sources.length; i++) {
+
+
+          console.log('New E: ')
+          if(sources[i].startsWith('#GO') && ts[i].startsWith('#GO')) {
+            const s = cy.$(sources[i])
+            const t = cy.$(ts[i])
+
+            const e = s.edgesWith(t)
+            console.log(s)
+            console.log(t)
+            console.log(e)
+
+            e.select()
+          }
+        }
+      }
+
+      cy.fit(target)
+
+      cy.endBatch()
+
     } else if(commandName === 'focus') {
 
       console.log('+++ Focus to a node +++++++++')
+
       const idList = commandParams.idList
 
       let selected = idList.map(id => (id.replace(/\:/, '\\:')))
       selected = selected.map(id=>('#' + id))
       const strVal = selected.toString()
 
-      const target = cy.elements(strVal)
 
       cy.startBatch();
+
+      if(this.state.lastFocus !== undefined) {
+        this.state.lastFocus.removeClass('focused')
+      }
+
+      const target = cy.elements(strVal)
+
+      this.setState({
+        lastFocus: target
+      })
+
       var t0 = performance.now();
 
-      this.state.allElements.addClass('faded')
+      // this.state.allElements.addClass('faded')
       //this.state.allElements.removeClass('focused')
 
       //target.removeClass('faded')
@@ -248,9 +303,9 @@ class CytoscapeJsRenderer extends Component {
       const h = cy.height()
       let padding = 100
       if(w > h) {
-        padding = h * 0.4
+        padding = h * 0.2
       } else {
-        padding = w * 0.4
+        padding = w * 0.2
       }
 
       cy.fit(target, padding)
@@ -305,7 +360,10 @@ class CytoscapeJsRenderer extends Component {
 
   findPath = (s, g) => {
     const aStar = this.state.cyjs.elements().aStar({ root: "#" + s, goal: "#"+ g });
-    aStar.path.select();
+    const path = aStar.path
+
+    path.select()
+    this.state.cyjs.fit(path)
   }
 
 
@@ -388,28 +446,28 @@ class CytoscapeJsRenderer extends Component {
       if( e.cyTarget === cy ){
 
         cy.startBatch();
-        this.state.allElements.removeClass('faded focused');
+        this.state.allElements.removeClass('focused');
         cy.endBatch();
       }
     })
 
-    document.addEventListener('mousewheel', e => {
-
-      setTimeout(() => {
-        cy.startBatch();
-        const zoomLevel = cy.zoom()
-        // console.log(zoomLevel)
-
-        if (zoomLevel > 0.1) {
-          this.state.genes.classes()
-        } else {
-          this.state.genes.addClass('invisible')
-        }
-
-        cy.endBatch();
-      }, 300)
-
-    })
+    // document.addEventListener('mousewheel', e => {
+    //
+    //   setTimeout(() => {
+    //     cy.startBatch();
+    //     const zoomLevel = cy.zoom()
+    //     // console.log(zoomLevel)
+    //
+    //     if (zoomLevel > 0.1) {
+    //       this.state.genes.classes()
+    //     } else {
+    //       this.state.genes.addClass('invisible')
+    //     }
+    //
+    //     cy.endBatch();
+    //   }, 300)
+    //
+    // })
 
   }
 
