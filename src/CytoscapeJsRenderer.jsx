@@ -220,8 +220,6 @@ class CytoscapeJsRenderer extends Component {
 
       cy.startBatch()
 
-
-
       let selected = idList.map(id => (id.replace(/\:/, '\\:')))
       selected = selected.map(id=>('#' + id))
 
@@ -239,33 +237,32 @@ class CytoscapeJsRenderer extends Component {
 
       // Select edges
 
-      if(edges !== undefined && edges !== null) {
-        let sources = edges.map(edge => (edge.source.replace(/\:/, '\\:')))
-        sources = sources.map(source=>('#' + source))
-
-        let ts = edges.map(edge => (edge.target.replace(/\:/, '\\:')))
-        ts = ts.map(target=>('#' + target))
-
-        for(let i=0; i< sources.length; i++) {
-
-
-          console.log('New E: ')
-          if(sources[i].startsWith('#GO') && ts[i].startsWith('#GO')) {
-            const s = cy.$(sources[i])
-            const t = cy.$(ts[i])
-
-            const e = s.edgesWith(t)
-            console.log(s)
-            console.log(t)
-            console.log(e)
-
-            e.select()
-          }
-        }
-      }
+      // if(edges !== undefined && edges !== null) {
+      //   let sources = edges.map(edge => (edge.source.replace(/\:/, '\\:')))
+      //   sources = sources.map(source=>('#' + source))
+      //
+      //   let ts = edges.map(edge => (edge.target.replace(/\:/, '\\:')))
+      //   ts = ts.map(target=>('#' + target))
+      //
+      //   for(let i=0; i< sources.length; i++) {
+      //
+      //
+      //     console.log('New E: ')
+      //     if(sources[i].startsWith('#GO') && ts[i].startsWith('#GO')) {
+      //       const s = cy.$(sources[i])
+      //       const t = cy.$(ts[i])
+      //
+      //       const e = s.edgesWith(t)
+      //       console.log(s)
+      //       console.log(t)
+      //       console.log(e)
+      //
+      //       e.select()
+      //     }
+      //   }
+      // }
 
       cy.fit(target)
-
       cy.endBatch()
 
     } else if(commandName === 'focus') {
@@ -277,7 +274,6 @@ class CytoscapeJsRenderer extends Component {
       let selected = idList.map(id => (id.replace(/\:/, '\\:')))
       selected = selected.map(id=>('#' + id))
       const strVal = selected.toString()
-
 
       cy.startBatch();
 
