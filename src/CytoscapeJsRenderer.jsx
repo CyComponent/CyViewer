@@ -315,9 +315,7 @@ class CytoscapeJsRenderer extends Component {
 
     } else if (commandName === 'filter') {
       const options = commandParams.options
-
       const filterType = options.type
-
 
       if(filterType === 'numeric') {
         const range = options.range
@@ -330,6 +328,8 @@ class CytoscapeJsRenderer extends Component {
         toBeShown.removeClass('dark')
         console.log('++++++++++++ hidden2!! +++++++++')
       }
+    } else if(commandName === 'unselectAll') {
+      this.state.allElements.unselect()
     }
 
     // Callback
