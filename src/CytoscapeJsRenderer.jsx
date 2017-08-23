@@ -201,9 +201,17 @@ class CytoscapeJsRenderer extends Component {
     if (commandName === 'fit') {
       cy.fit()
     } else if (commandName === 'zoomIn') {
-      cy.zoom(cy.zoom() * 1.2)
+      const zoomLevel = cy.zoom() * 1.2
+      cy.zoom({
+        level: zoomLevel,
+        renderedPosition: { x: cy.width()/2, y: cy.height()/2 }
+      })
     } else if (commandName === 'zoomOut') {
-      cy.zoom(cy.zoom() * 0.8)
+      const zoomLevel = cy.zoom() * 0.8
+      cy.zoom({
+        level: zoomLevel,
+        renderedPosition: { x: cy.width()/2, y: cy.height()/2 }
+      })
     } else if (commandName === 'findPath') {
       const startId = commandParams.startId
       const endId = commandParams.endId
